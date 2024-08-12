@@ -20,8 +20,13 @@ class Builder:
     def patch(self):
         os.chdir(f'{self.root}/fcitx5-{self.name}')
         file = f'../patches/{self.name}.patch'
-        if os.system('git diff --ignore-submodules > /dev/null') == 0 and os.path.isfile(file):
+        if os.system('git diff --ignore-submodules --exit-code > /dev/null') == 0 and os.path.isfile(file):
             ensure('git', ['apply', file])
+        ensure('sed', [
+            '-i',
+            f'"s|\\"/usr/include|\\"{self.root}/build/sysroot/usr/include|g"',
+            '$(find ../build/sysroot/usr -name "*.cmake")'
+        ])
 
     def configure(self):
         os.environ['PKG_CONFIG_PATH'] = f'{self.root}/build/sysroot/usr/lib/pkgconfig'

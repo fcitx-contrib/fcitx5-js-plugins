@@ -1,5 +1,4 @@
 deps=(
-  fmt
   json-c
   marisa
 )
