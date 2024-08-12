@@ -27,6 +27,11 @@ class Builder:
             f'"s|\\"/usr/include|\\"{self.root}/build/sysroot/usr/include|g"',
             '$(find ../build/sysroot/usr -name "*.cmake")'
         ])
+        ensure('sed', [
+            '-i',
+            f'"s|=/usr/include|={self.root}/build/sysroot/usr/include|g"',
+            '$(find ../build/sysroot/usr -name "*.pc")'
+        ])
 
     def configure(self):
         os.environ['PKG_CONFIG_PATH'] = f'{self.root}/build/sysroot/usr/lib/pkgconfig'
