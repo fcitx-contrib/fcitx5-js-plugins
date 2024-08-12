@@ -23,7 +23,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt install -y ninja-build
+          sudo apt install -y ninja-build \
+            extra-cmake-modules \
+            gettext
           ./install-deps.sh
 
       - name: Install emsdk
