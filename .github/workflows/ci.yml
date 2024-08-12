@@ -25,7 +25,8 @@ jobs:
         run: |
           sudo apt install -y ninja-build \
             extra-cmake-modules \
-            gettext
+            gettext \
+            marisa
           ./install-deps.sh
 
       - name: Install emsdk
