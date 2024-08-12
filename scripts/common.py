@@ -17,8 +17,13 @@ class Builder:
         self.destdir = f'{self.root}/build/{self.name}'
         self.options = options or []
 
-    def configure(self):
+    def patch(self):
         os.chdir(f'{self.root}/fcitx5-{self.name}')
+        file = f'../patches/{self.name}.patch'
+        if os.system('git diff --ignore-submodules > /dev/null') == 0 and os.path.isfile(file):
+            ensure('git', ['apply', file])
+
+    def configure(self):
         os.environ['PKG_CONFIG_PATH'] = f'{self.root}/build/sysroot/usr/lib/pkgconfig'
         ensure('emcmake', ['cmake',
             '-B', 'build', '-G', 'Ninja',
@@ -40,6 +45,7 @@ class Builder:
         ensure('tar', ['cjvf', f'{self.destdir}.tar.bz2', '*'])
 
     def exec(self):
+        self.patch()
         self.configure()
         ensure('sed', [
             '-i',
