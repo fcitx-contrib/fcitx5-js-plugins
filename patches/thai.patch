@@ -1,0 +1,24 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 9ffc57c..865c410 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -6,6 +6,10 @@ include(FeatureSummary)
+ include(GNUInstallDirs)
+ include(ECMUninstallTarget)
+ 
++set_property(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
++set(CMAKE_SHARED_LIBRARY_CREATE_C_FLAGS "-sSIDE_MODULE")
++set(CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS "-sSIDE_MODULE")
++
+ find_package(PkgConfig REQUIRED)
+ find_package(Fcitx5Core 5.0.2 REQUIRED)
+ find_package(Iconv REQUIRED)
+@@ -16,7 +20,7 @@ if (NOT DEFINED THAI_TARGET)
+     set(THAI_TARGET PkgConfig::LibThai)
+ endif()
+ 
+-include("${FCITX_INSTALL_CMAKECONFIG_DIR}/Fcitx5Utils/Fcitx5CompilerSettings.cmake")
++include("../build/sysroot${FCITX_INSTALL_CMAKECONFIG_DIR}/Fcitx5Utils/Fcitx5CompilerSettings.cmake")
+ add_definitions(-DFCITX_GETTEXT_DOMAIN=\"fcitx5-libthai\")
+ fcitx5_add_i18n_definition()
+ 

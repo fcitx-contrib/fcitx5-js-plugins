@@ -1,5 +1,6 @@
 deps=(
   json-c
+  libthai
   marisa
 )
 
