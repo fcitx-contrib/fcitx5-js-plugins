@@ -1,7 +1,12 @@
 deps=(
+  glog
   json-c
+  leveldb
+  librime
   libthai
   marisa
+  opencc
+  yaml-cpp
 )
 
 EXTRACT_DIR=build/sysroot/usr

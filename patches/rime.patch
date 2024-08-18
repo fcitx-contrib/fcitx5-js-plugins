@@ -1,0 +1,114 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index e96508c..37c7cb5 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -9,6 +9,10 @@ include(GNUInstallDirs)
+ include(ECMSetupVersion)
+ include(ECMUninstallTarget)
+ 
++set_property(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
++set(CMAKE_SHARED_LIBRARY_CREATE_C_FLAGS "-sSIDE_MODULE")
++set(CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS "-sSIDE_MODULE")
++
+ find_package(Gettext REQUIRED)
+ find_package(Fcitx5Core 5.1.11 REQUIRED)
+ find_package(Fcitx5Module REQUIRED COMPONENTS Notifications)
+@@ -16,8 +20,8 @@ find_package(PkgConfig REQUIRED)
+ find_package(Pthread REQUIRED)
+ 
+ if (NOT DEFINED RIME_TARGET)
+-    pkg_check_modules(Rime REQUIRED IMPORTED_TARGET "rime>=1.0.0")
+-    set(RIME_TARGET PkgConfig::Rime)
++    set(RIME_TARGET "-L${PROJECT_SOURCE_DIR}/../build/sysroot/usr/lib" librime.a leveldb yaml-cpp marisa opencc glog)
++    set(Rime_VERSION "1.11.2")
+ endif()
+ 
+ if ("${Rime_VERSION}" VERSION_LESS "1.8.0")
+@@ -42,7 +46,7 @@ add_definitions(-DFCITX_GETTEXT_DOMAIN=\"fcitx5-rime\")
+ add_definitions(-DFCITX_RIME_VERSION=\"${PROJECT_VERSION}\")
+ fcitx5_add_i18n_definition()
+ 
+-include("${FCITX_INSTALL_CMAKECONFIG_DIR}/Fcitx5Utils/Fcitx5CompilerSettings.cmake")
++include("../build/sysroot${FCITX_INSTALL_CMAKECONFIG_DIR}/Fcitx5Utils/Fcitx5CompilerSettings.cmake")
+ 
+ add_subdirectory(po)
+ add_subdirectory(src)
+diff --git a/src/rimecandidate.cpp b/src/rimecandidate.cpp
+index fc84a03..79c461d 100644
+--- a/src/rimecandidate.cpp
++++ b/src/rimecandidate.cpp
+@@ -75,6 +75,9 @@ RimeCandidateList::RimeCandidateList(RimeEngine *engine, InputContext *ic,
+     setPageable(this);
+     setBulk(this);
+     setActionable(this);
++#ifndef FCITX_RIME_NO_HIGHLIGHT_CANDIDATE
++    setBulkCursor(this);
++#endif
+ 
+     const auto &menu = context.menu;
+ 
+@@ -187,4 +190,19 @@ void RimeCandidateList::triggerAction(const CandidateWord &candidate, int id) {
+         }
+     }
+ }
++
++#ifndef FCITX_RIME_NO_HIGHLIGHT_CANDIDATE
++int RimeCandidateList::globalCursorIndex() const {
++    return -1; // No API available.
++}
++
++void RimeCandidateList::setGlobalCursorIndex(int index) {
++    auto session = engine_->state(ic_)->session(false);
++    if (!session) {
++        throw std::invalid_argument("Invalid session");
++    }
++    auto *api = engine_->api();
++    api->highlight_candidate(session, index);
++}
++#endif
+ } // namespace fcitx
+diff --git a/src/rimecandidate.h b/src/rimecandidate.h
+index 6c96898..a52b87a 100644
+--- a/src/rimecandidate.h
++++ b/src/rimecandidate.h
+@@ -52,6 +52,10 @@ class RimeCandidateList final : public CandidateList,
+     ,
+                                 public BulkCandidateList
+ #endif
++#ifndef FCITX_RIME_NO_HIGHLIGHT_CANDIDATE
++    ,
++                                public BulkCursorCandidateList
++#endif
+ {
+ public:
+     RimeCandidateList(RimeEngine *engine, InputContext *ic,
+@@ -94,6 +98,11 @@ public:
+     int totalSize() const override;
+ #endif
+ 
++#ifndef FCITX_RIME_NO_HIGHLIGHT_CANDIDATE
++    int globalCursorIndex() const override;
++    void setGlobalCursorIndex(int index) override;
++#endif
++
+     bool hasAction(const CandidateWord &candidate) const override;
+     std::vector<CandidateAction>
+     candidateActions(const CandidateWord &candidate) const override;
+diff --git a/src/rimestate.cpp b/src/rimestate.cpp
+index a8fe4b9..c54100c 100644
+--- a/src/rimestate.cpp
++++ b/src/rimestate.cpp
+@@ -79,7 +79,12 @@ void RimeState::clear() {
+     }
+ }
+ 
+-void RimeState::activate() { maybeSyncProgramNameToSession(); }
++void RimeState::activate() {
++    maybeSyncProgramNameToSession();
++    if (session_) {
++        engine_->api()->set_option(session_->id(), "_linear", true);
++    }
++}
+ 
+ std::string RimeState::subMode() {
+     std::string result;
