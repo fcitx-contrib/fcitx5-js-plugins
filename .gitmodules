@@ -4,3 +4,18 @@
 [submodule "fcitx5-thai"]
 	path = fcitx5-thai
 	url = https://github.com/fcitx/fcitx5-libthai
+[submodule "fcitx5-rime"]
+	path = fcitx5-rime
+	url = https://github.com/fcitx/fcitx5-rime
+[submodule "fcitx5-rime-data/rime-prelude"]
+	path = fcitx5-rime-data/rime-prelude
+	url = https://github.com/rime/rime-prelude
+[submodule "fcitx5-rime-data/rime-essay"]
+	path = fcitx5-rime-data/rime-essay
+	url = https://github.com/rime/rime-essay
+[submodule "fcitx5-rime-data/rime-luna-pinyin"]
+	path = fcitx5-rime-data/rime-luna-pinyin
+	url = https://github.com/rime/rime-luna-pinyin
+[submodule "fcitx5-rime-data/rime-stroke"]
+	path = fcitx5-rime-data/rime-stroke
+	url = https://github.com/rime/rime-stroke
