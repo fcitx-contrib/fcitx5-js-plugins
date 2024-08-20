@@ -1,12 +1,16 @@
 deps=(
+  boost
+  extra-cmake-modules
   glog
   json-c
   leveldb
+  libime
   librime
   libthai
   marisa
   opencc
   yaml-cpp
+  zstd
 )
 
 EXTRACT_DIR=build/sysroot/usr

@@ -38,7 +38,7 @@ class Builder:
         ensure('emcmake', ['cmake',
             '-B', 'build', '-G', 'Ninja',
             f'-DCMAKE_INSTALL_PREFIX={INSTALL_PREFIX}',
-            f'-DCMAKE_FIND_ROOT_PATH="{self.root}/build/sysroot/usr;/usr"',
+            f'-DCMAKE_FIND_ROOT_PATH={self.root}/build/sysroot/usr',
             '-DCMAKE_BUILD_TYPE=Release',
             *self.options
         ])
