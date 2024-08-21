@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index e96508c..37c7cb5 100644
+index e96508c..46e9923 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -9,6 +9,10 @@ include(GNUInstallDirs)
@@ -13,7 +13,7 @@ index e96508c..37c7cb5 100644
  find_package(Gettext REQUIRED)
  find_package(Fcitx5Core 5.1.11 REQUIRED)
  find_package(Fcitx5Module REQUIRED COMPONENTS Notifications)
-@@ -16,8 +20,8 @@ find_package(PkgConfig REQUIRED)
+@@ -16,8 +20,9 @@ find_package(PkgConfig REQUIRED)
  find_package(Pthread REQUIRED)
  
  if (NOT DEFINED RIME_TARGET)
@@ -21,10 +21,11 @@ index e96508c..37c7cb5 100644
 -    set(RIME_TARGET PkgConfig::Rime)
 +    set(RIME_TARGET "-L${PROJECT_SOURCE_DIR}/../build/sysroot/usr/lib" librime.a leveldb yaml-cpp marisa opencc glog)
 +    set(Rime_VERSION "1.11.2")
++    include_directories("${PROJECT_SOURCE_DIR}/../build/sysroot/usr/include")
  endif()
  
  if ("${Rime_VERSION}" VERSION_LESS "1.8.0")
-@@ -42,7 +46,7 @@ add_definitions(-DFCITX_GETTEXT_DOMAIN=\"fcitx5-rime\")
+@@ -42,7 +47,7 @@ add_definitions(-DFCITX_GETTEXT_DOMAIN=\"fcitx5-rime\")
  add_definitions(-DFCITX_RIME_VERSION=\"${PROJECT_VERSION}\")
  fcitx5_add_i18n_definition()
  
