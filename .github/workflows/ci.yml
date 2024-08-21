@@ -24,6 +24,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt install -y ninja-build \
+            libime-bin \
             extra-cmake-modules \
             gettext \
             marisa
@@ -39,6 +40,7 @@ jobs:
       - name: Build
         run: |
           . emsdk/emsdk_env.sh
+          python scripts/chinese-addons.py
           python scripts/hallelujah.py
           python scripts/rime.py
           python scripts/thai.py
