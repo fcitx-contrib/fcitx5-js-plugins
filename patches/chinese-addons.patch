@@ -108,9 +108,18 @@ index 439574c..9102dac 100644
  
  void PinyinEngine::loadBuiltInDict() {
 diff --git a/im/pinyin/pinyin.h b/im/pinyin/pinyin.h
-index 9884c8d..3767e70 100644
+index 9884c8d..65a0552 100644
 --- a/im/pinyin/pinyin.h
 +++ b/im/pinyin/pinyin.h
+@@ -173,7 +173,7 @@ FCITX_CONFIGURATION(
+     Option<bool> preeditCursorPositionAtBeginning{
+         this, "PreeditCursorPositionAtBeginning",
+         _("Fix embedded preedit cursor at the beginning of the preedit"),
+-        !isAndroid() && !isApple()};
++        false};
+     Option<bool> showActualPinyinInPreedit{
+         this, "PinyinInPreedit", _("Show complete pinyin in preedit"), false};
+     Option<bool> predictionEnabled{this, "Prediction", _("Enable Prediction"),
 @@ -447,7 +447,6 @@ private:
      std::unique_ptr<HandlerTableEntry<EventHandler>> event_;
      CustomPhraseDict customPhrase_;
@@ -132,19 +141,35 @@ index 91ed495..e5640bf 100644
  target_compile_definitions(table PRIVATE FCITX_STRINGUTILS_ENABLE_BOOST_STRING_VIEW)
  install(TARGETS table DESTINATION "${CMAKE_INSTALL_LIBDIR}/fcitx5")
  configure_file(table.conf.in.in table.conf.in)
+diff --git a/im/table/ime.h b/im/table/ime.h
+index e25c135..0be53c9 100644
+--- a/im/table/ime.h
++++ b/im/table/ime.h
+@@ -129,7 +129,7 @@ FCITX_CONFIGURATION(
+     Option<bool> preeditCursorPositionAtBeginning{
+         this, "PreeditCursorPositionAtBeginning",
+         _("Fix embedded preedit cursor at the beginning of the preedit"),
+-        !isAndroid() && !isApple()};
++        false};
+     Option<Key, KeyConstrain> quickphrase{
+         this,
+         "QuickPhraseKey",
 diff --git a/modules/chttrans/CMakeLists.txt b/modules/chttrans/CMakeLists.txt
-index 14351c8..631be74 100644
+index 14351c8..7f547c9 100644
 --- a/modules/chttrans/CMakeLists.txt
 +++ b/modules/chttrans/CMakeLists.txt
-@@ -5,7 +5,7 @@ if (ENABLE_OPENCC)
+@@ -5,9 +5,9 @@ if (ENABLE_OPENCC)
      set(CHTTRANS_SOURCES ${CHTTRANS_SOURCES} chttrans-opencc.cpp)
  endif()
  add_library(chttrans MODULE ${CHTTRANS_SOURCES})
 -target_link_libraries(chttrans Fcitx5::Core Fcitx5::Config Fcitx5::Module::Notifications Boost::iostreams ${FMT_TARGET})
 +target_link_libraries(chttrans -fexceptions Fcitx5::Core Fcitx5::Config Fcitx5::Module::Notifications Boost::iostreams ${FMT_TARGET})
  if (ENABLE_OPENCC)
-     target_link_libraries(chttrans OpenCC::OpenCC)
+-    target_link_libraries(chttrans OpenCC::OpenCC)
++    target_link_libraries(chttrans OpenCC::OpenCC "${PROJECT_SOURCE_DIR}/../build/sysroot/usr/lib/libmarisa.a")
      if (TARGET Boost::json)
+         target_link_libraries(chttrans Boost::json)
+     endif()
 diff --git a/modules/pinyinhelper/CMakeLists.txt b/modules/pinyinhelper/CMakeLists.txt
 index a2ca5d9..8619ff9 100644
 --- a/modules/pinyinhelper/CMakeLists.txt
