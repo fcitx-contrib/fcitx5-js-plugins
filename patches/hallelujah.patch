@@ -1,10 +1,10 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 02daeea..17cf5c9 100644
+index 7ffcf34..8fa5fa8 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.6.0)
  
- project(fcitx5-hallelujah VERSION 5.0.0)
+ project(fcitx5-hallelujah VERSION 5.0.1)
  
 +set_property(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
 +set(CMAKE_SHARED_LIBRARY_CREATE_C_FLAGS "-sSIDE_MODULE")
